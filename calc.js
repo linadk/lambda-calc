@@ -58,12 +58,12 @@ const CellList = {
     input_field.addEventListener('keypress',(e) => {
       if (e.key === 'Enter'){ // Hook keypress/enter to get numpad return
         const ce = new ComputeEngine.ComputeEngine();
-        output_field.innerHTML = ce.parse(input_field.value).N();
+        output_field.innerHTML = ce.parse(input_field.value).N().valueOf();
       }
     });
     input_field.addEventListener('change',(e)=>{ // We have to hook 'change' to get regular return
       const ce = new ComputeEngine.ComputeEngine();
-      output_field.innerHTML = ce.parse(input_field.value).N();
+      output_field.innerHTML = ce.parse(input_field.value).N().valueOf();
     });
 
     // Insert into cell list
@@ -72,6 +72,7 @@ const CellList = {
   },
 }
 
+// Entry point
 window.onload = function() {
   const add_cell_button = document.getElementById('add_cell');
   const clear_button = document.getElementById('clear');
@@ -106,6 +107,4 @@ window.onload = function() {
   clear_button.addEventListener('click', (e) => {
     cells.Clear();
   });
-
-
 }
