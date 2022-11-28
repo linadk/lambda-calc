@@ -190,3 +190,8 @@
     color:#eee;
     font-size:large;
   }
+
+  .noutput{
+    border-top: 1px solid rgb(98,69,83);
+    background-color: rgb(71, 50, 60);
+  }
