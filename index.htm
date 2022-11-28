@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>Calc</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Katex stylesheet for markdown-it-katex -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+  
+  <body>
+    <div id="cell_container">
+      <!-- Cells go here -->
+    </div>
+
+    <div class="toolbar">
+      <button id= "add_cell" type="button">
+      + Math
+      </button>
+      <button id="add_codecell" type="button">
+      + Code
+      </button>
+      <button id="add_markdowncell" type="button">
+      + Text
+      </button>
+      <button id="clear" type="button">
+      Clear All
+      </button>
+    </div>
+
+    <script src="https://unpkg.com/@cortex-js/compute-engine"></script>
+    <script src="https://unpkg.com/mathlive"></script>
+    <script src="https://unpkg.com/markdown-it"></script>
+    <script src="https://unpkg.com/markdown-it-katex"></script>
+    <script src="calc.js"></script>
+  </body>
+</html>
