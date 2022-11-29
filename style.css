@@ -202,7 +202,10 @@
     width:100%;
     color: #eee;
     background-color:rgb(71, 50, 60);
-
+    resize: vertical;
+    height: 25px;
+    overflow-y: hidden;
+    min-height: 25px;
   }
 
   .footer{

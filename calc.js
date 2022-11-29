@@ -58,6 +58,7 @@ const CellList = {
 
   // Create a math input cell in the bottom slot
   CreateMathCell: function(container){
+
     // Create Input field
     var input_field = document.createElement("math-field");
     input_field.id = "fomula" + String(currnum);
@@ -72,6 +73,8 @@ const CellList = {
     container.appendChild(input_field);
     container.appendChild(output_field);
     this.cell_container.appendChild(container);
+
+    // Events
     input_field.addEventListener('keypress',(e) => {
       if (e.key === 'Enter'){ // Hook keypress/enter to get numpad return
         const ce = new ComputeEngine.ComputeEngine();
@@ -95,7 +98,9 @@ const CellList = {
     var input_field = document.createElement("textarea");
     input_field.id = "markdown" + String(currnum);
     input_field.setAttribute("class","md-input");
+    input_field.setAttribute("placeholder","Input Text Here...");
 
+    // Output field for error messaging
     var output_field = document.createElement("div");
     output_field.id = "output" + String(currnum);
     output_field.setAttribute('class','noutput');
@@ -105,9 +110,18 @@ const CellList = {
     container.appendChild(output_field);
     this.cell_container.appendChild(container);
 
-    // Setup listeners
+    // Listener for loss of focus
     input_field.addEventListener('blur',(e)=> {
+      // Process latex into html
       console.log("Event listener blur!");
+    });
+
+    // Listener for input - auto grow textarea
+    input_field.addEventListener("input", (e)=> {
+      var target = e.currentTarget;
+      target.setAttribute("class","md-input");
+      target.style.height = target.scrollHeight + "px";
+      target.style.overflowY = "hidden"; // If we dont set this, height change causes scrollbar in some browsers
     });
 
     // Insert into cell list
