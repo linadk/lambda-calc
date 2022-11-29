@@ -1,3 +1,4 @@
+// Cell class
 function Cell(id,order,input,output,type){
   this.id = id;
   this.order = order;
@@ -6,6 +7,7 @@ function Cell(id,order,input,output,type){
   this.type = type;
 }
 
+// Available cell types
 const CellType = {
   Math: "math",
   PlotMath: "plotmath",
@@ -23,6 +25,7 @@ const CellList = {
     this.cell_container = container_element;
   },
 
+  // Clear all cells
   Clear: function(){
     this.cells.forEach(element => {
       element.input_element.remove();
@@ -32,7 +35,7 @@ const CellList = {
     this.cells.length = 0;
   },
 
-  // Add cell to UI, hookup to events
+  // Add cell to UI
   AddCell: function(type){
     currnum = this.cells.length;
 
@@ -41,6 +44,20 @@ const CellList = {
     container.id = "cell" + String(currnum);
     container.setAttribute("class","cell");
 
+    switch(type){
+      case CellType.Math:
+        this.CreateMathCell(container);
+        break;
+      case CellType.Markdown:
+        this.CreateMarkdownCell(container);
+        break;
+      default:
+        break;
+    }
+  },
+
+  // Create a math input cell in the bottom slot
+  CreateMathCell: function(container){
     // Create Input field
     var input_field = document.createElement("math-field");
     input_field.id = "fomula" + String(currnum);
@@ -54,7 +71,7 @@ const CellList = {
     // Attach
     container.appendChild(input_field);
     container.appendChild(output_field);
-    cell_container.appendChild(container);
+    this.cell_container.appendChild(container);
     input_field.addEventListener('keypress',(e) => {
       if (e.key === 'Enter'){ // Hook keypress/enter to get numpad return
         const ce = new ComputeEngine.ComputeEngine();
@@ -67,44 +84,62 @@ const CellList = {
     });
 
     // Insert into cell list
-    var cell = new Cell(container.id,currnum,input_field,output_field,type);
+    var cell = new Cell(container.id,currnum,input_field,output_field,CellType.Math);
     this.cells.push(cell);
   },
+
+  // Create a markdown cell in the bottom slot
+  CreateMarkdownCell: function(container){
+
+    // Create Textarea Input
+    var input_field = document.createElement("textarea");
+    input_field.id = "markdown" + String(currnum);
+    input_field.setAttribute("class","md-input");
+
+    var output_field = document.createElement("div");
+    output_field.id = "output" + String(currnum);
+    output_field.setAttribute('class','noutput');
+
+    // Attach
+    container.appendChild(input_field);
+    container.appendChild(output_field);
+    this.cell_container.appendChild(container);
+
+    // Setup listeners
+    input_field.addEventListener('blur',(e)=> {
+      console.log("Event listener blur!");
+    });
+
+    // Insert into cell list
+    var cell = new Cell(container.id,currnum,input_field,output_field,CellType.Markdown);
+    this.cells.push(cell);
+  }
 }
 
 // Entry point
 window.onload = function() {
   const add_cell_button = document.getElementById('add_cell');
+  const add_md_cell_btn = document.getElementById('add_md_cell');
   const clear_button = document.getElementById('clear');
+
+  // Get handle to markdown-it
+  var md = window.markdownit();
   
-  // List of cells
+  // Create Cell LIst
   const cells = Object.create(CellList);
   cells.Init(document.getElementById("cell_container"));
   cells.AddCell("math");
 
-  // Prop values on load
-  //latex.value = mf.value;
-
-  // Listen for input on math field
-  /*mf.addEventListener('input',(ev) => {
-    latex.value = mf.value;
-    output.value = ce.parse(latex.value).N().latex;
-  });
-
-  //  Listen for input on the latex field
-  latex.addEventListener('input', (ev) => {
-    mf.setValue(
-      ev.target.value,
-      {suppressChangeNotifications: true}
-    );
-    output.value = ce.parse(latex.value).N().latex;
-  });*/
-
+  // Attach base event listeners
   add_cell_button.addEventListener('click', (ev)=> {
     newcell = cells.AddCell("math")
   });
 
   clear_button.addEventListener('click', (e) => {
     cells.Clear();
+  });
+
+  add_md_cell_btn.addEventListener('click', (e)=>{
+    newcell = cells.AddCell("md");
   });
 }

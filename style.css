@@ -195,3 +195,12 @@
     border-top: 1px solid rgb(98,69,83);
     background-color: rgb(71, 50, 60);
   }
+
+  .md-input{
+    margin-left:auto;
+    margin-right:auto;
+    width:100%;
+    color: #eee;
+    background-color:rgb(71, 50, 60);
+
+  }
