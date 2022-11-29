@@ -204,3 +204,27 @@
     background-color:rgb(71, 50, 60);
 
   }
+
+  .footer{
+    margin-left:auto;
+    margin-right:auto;
+    text-align: center;
+    width:100%;
+    color: #eee;
+  }
+
+a{
+  text-decoration: none;
+}
+
+a:visited{
+  color: #aaa;
+}
+
+a:active{
+  color: #eee;
+}
+
+a:hover{
+  color: #ccc;
+}
