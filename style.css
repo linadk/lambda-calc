@@ -205,7 +205,37 @@
     resize: vertical;
     height: 25px;
     overflow-y: hidden;
+    display: block;
     min-height: 25px;
+  }
+
+  .md-input-hidden{
+    min-height: 0px;
+    height: 0px;
+    visibility: hidden;
+    display: none;
+    border: 0px;
+  }
+
+  .md-output{
+    margin-left:auto;
+    margin-right:auto;
+    width:100%;
+    color: #eee;
+    border-top: 1px solid rgb(98,69,83);
+    background-color: rgb(71, 50, 60);
+    resize: vertical;
+    overflow-y: hidden;
+    display: block;
+    visibility: visible;
+  }
+
+  .md-output-hidden{
+    min-height: 0px;
+    height: 0px;
+    visibility: hidden;
+    display: none;
+    border: 0px;
   }
 
   .footer{

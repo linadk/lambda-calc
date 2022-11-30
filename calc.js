@@ -15,6 +15,16 @@ const CellType = {
   Markdown: "md",
 }
 
+// Parse markdown for a cell textarea, adds markdown html to md-output
+function ParseMarkdown(container){
+  var md = window.markdownit();
+  var textarea = container.getElementsByClassName("md-input")[0];
+  var output = container.getElementsByClassName("md-output")[0];
+  var markdown = textarea.value;
+  var html = md.render(markdown);
+  output.innerHTML = html;
+}
+
 // List of cells
 const CellList = {
   cells: [],
@@ -103,25 +113,39 @@ const CellList = {
     // Output field for error messaging
     var output_field = document.createElement("div");
     output_field.id = "output" + String(currnum);
-    output_field.setAttribute('class','noutput');
+    output_field.setAttribute('class','md-output');
 
     // Attach
     container.appendChild(input_field);
     container.appendChild(output_field);
     this.cell_container.appendChild(container);
 
-    // Listener for loss of focus
+    // On Loss of Input Focus, Process MD to html
     input_field.addEventListener('blur',(e)=> {
-      // Process latex into html
-      console.log("Event listener blur!");
+      output_field.setAttribute("class","md-output");
+      ParseMarkdown(container);
+      input_field.setAttribute("class","md-input-hidden");
+
     });
 
-    // Listener for input - auto grow textarea
+    // On Input Change Grow Text Area
     input_field.addEventListener("input", (e)=> {
       var target = e.currentTarget;
       target.setAttribute("class","md-input");
       target.style.height = target.scrollHeight + "px";
       target.style.overflowY = "hidden"; // If we dont set this, height change causes scrollbar in some browsers
+    });
+
+    // Click Markdown Output To Return to Editing
+    output_field.addEventListener("click", (e)=>{
+
+      // Enable Input Field
+      input_field.setAttribute("class","md-input");
+      input_field.style.height = input_field.scrollHeight + "px";
+      input_field.style.overflowY = "hidden";
+
+      // Hide Output
+      output_field.setAttribute("class","md-output-hidden");
     });
 
     // Insert into cell list
