@@ -1,10 +1,11 @@
 // Cell class
-function Cell(id,order,input,output,type){
+function Cell(id,order,input,output,type, title){
   this.id = id;
   this.order = order;
   this.input_element = input;
   this.output_element = output;
   this.type = type;
+  this.title = title;
 }
 
 // Available cell types
@@ -23,6 +24,36 @@ function ParseMarkdown(container){
   var markdown = textarea.value;
   var html = md.render(markdown);
   output.innerHTML = html;
+}
+
+const EditableTitle = {
+  title: "Untitled",
+  title_container: null,
+  title_element: null,
+  is_in_edit_mode: false,
+
+  // Create Editable Title
+  Create: function(title,container){
+
+    // Setup element inside container with edit mode false
+    this.title = title;
+    this.container = container;
+    this.title_element = this.container.createElement("span");
+    this.title_element.innerHTML = this.title;
+    this.container.appendChild(title_element);
+    this.title_element.setAttribute("class","editable-title");
+    this.title_element.addEventListener('dblclick', (e)=>{
+      console.log("It was double clicked!");
+    });
+
+    return this;
+    
+  },
+
+  // Edit Event
+  OnEdit: function(ev){
+
+  }
 }
 
 // List of cells
@@ -54,6 +85,20 @@ const CellList = {
     container.id = "cell" + String(currnum);
     container.setAttribute("class","cell");
 
+    // Titlebar ( Title, collapse, drag )
+    var titlebar = document.createElement("div");
+    titlebar.id = "celltitle" + String(currnum);
+    titlebar.setAttribute("class","cell-title");
+    titlebar.setAttribute("contenteditable","true");
+    titlebar.innerHTML = "Untitled Cell";
+    container.appendChild(titlebar);
+
+    // Content
+    var content = document.createElement("div");
+    content.id = "cellcontent" + String(currnum);
+    content.setAttribute("class","cell-content");
+    container.appendChild(content);
+
     switch(type){
       case CellType.Math:
         this.CreateMathCell(container);
@@ -80,8 +125,9 @@ const CellList = {
     output_field.setAttribute('class','noutput');
 
     // Attach
-    container.appendChild(input_field);
-    container.appendChild(output_field);
+    var content_container = container.getElementsByClassName("cell-content")[0];
+    content_container.appendChild(input_field);
+    content_container.appendChild(output_field);
     this.cell_container.appendChild(container);
 
     // Events
@@ -97,7 +143,7 @@ const CellList = {
     });
 
     // Insert into cell list
-    var cell = new Cell(container.id,currnum,input_field,output_field,CellType.Math);
+    var cell = new Cell(container.id,currnum,input_field,output_field,CellType.Math , "Untitled Cell");
     this.cells.push(cell);
   },
 
@@ -116,8 +162,9 @@ const CellList = {
     output_field.setAttribute('class','md-output');
 
     // Attach
-    container.appendChild(input_field);
-    container.appendChild(output_field);
+    var content_container = container.getElementsByClassName("cell-content")[0];
+    content_container.appendChild(input_field);
+    content_container.appendChild(output_field);
     this.cell_container.appendChild(container);
 
     // On Loss of Input Focus, Process MD to html
@@ -149,7 +196,7 @@ const CellList = {
     });
 
     // Insert into cell list
-    var cell = new Cell(container.id,currnum,input_field,output_field,CellType.Markdown);
+    var cell = new Cell(container.id,currnum,input_field,output_field,CellType.Markdown, "Untitled Cell");
     this.cells.push(cell);
   }
 }
