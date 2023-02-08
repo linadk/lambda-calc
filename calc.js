@@ -26,32 +26,81 @@ function ParseMarkdown(container){
   output.innerHTML = html;
 }
 
-const EditableTitle = {
-  title: "Untitled",
-  title_container: null,
-  title_element: null,
-  is_in_edit_mode: false,
+/// Holds logic for creating/manpiulating cell titles
+class CellTitle {
 
-  // Create Editable Title
-  Create: function(title,container){
+    container;
+    element;
+    editing = false;
 
-    // Setup element inside container with edit mode false
-    this.title = title;
+  /// Create a cell title and attach it to the given container
+  constructor(container, id) {
     this.container = container;
-    this.title_element = this.container.createElement("span");
-    this.title_element.innerHTML = this.title;
-    this.container.appendChild(title_element);
-    this.title_element.setAttribute("class","editable-title");
-    this.title_element.addEventListener('dblclick', (e)=>{
-      console.log("It was double clicked!");
-    });
+    this.element = document.createElement("div");
 
-    return this;
+    // Setup the element
+    this.element.id = "celltitle"+String(id);
+    this.element.innerHTML = "Untitled"
+    this.element.setAttribute("class","cell-title");
+    this.IsEditing = false;
+
+    // Attach
+    this.container.appendChild(this.element);
+
+    // Listeners
+
+    this.element.addEventListener('dblclick', (e)=>{
+      this.OnDoubleClick(e);
+    })
+  
+    this.element.addEventListener('keydown', (e)=>{
+      this.OnKeyDown(e);
+    })
+
+    this.element.addEventListener('paste',(e)=>{
+      this.OnPaste(e);
+    })
+  }
+
+  // Handle title editing logic
+  set IsEditing(isEditing){
+    this.editing = isEditing;
+    if(this.editing === true){
+      this.element.setAttribute("contenteditable","true");
+      setEndOfContenteditable(this.element);
+      this.element.style.border = "1px solid white";
+    } else {
+      this.element.setAttribute("contenteditable","false");
+      this.element.style.border = "0px solid black";
+    }
+  }
+
+  get IsEditing(){
+    return this.editing;
+  }
+
+  OnDoubleClick(e){
+    this.IsEditing = !this.IsEditing
+  }
+
+  OnKeyDown(e){
+    if(e.key === 'Enter'){ // On enter, disable editing
+      e.preventDefault();
+      this.IsEditing = false;
+    }
+  }
+
+  OnPaste(e){
+    if(this.IsEditing === false){return;}
+
+    // If we paste while editing, take only the first line. 
+    e.preventDefault();
+    let paste = (e.clipboardData || window.clipboardData).getData('text');
+    let lines = paste.split(/\r?\n|\r|\n/g);
     
-  },
+    if(lines[0] == ""){ lines[0]="Untitled";}
 
-  // Edit Event
-  OnEdit: function(ev){
+    this.element.innerHTML = lines[0];
 
   }
 }
@@ -85,13 +134,8 @@ const CellList = {
     container.id = "cell" + String(currnum);
     container.setAttribute("class","cell");
 
-    // Titlebar ( Title, collapse, drag )
-    var titlebar = document.createElement("div");
-    titlebar.id = "celltitle" + String(currnum);
-    titlebar.setAttribute("class","cell-title");
-    titlebar.setAttribute("contenteditable","true");
-    titlebar.innerHTML = "Untitled Cell";
-    container.appendChild(titlebar);
+    // Title
+    const titlebar = new CellTitle(container,String(currnum));
 
     // Content
     var content = document.createElement("div");
@@ -227,4 +271,28 @@ window.onload = function() {
   add_md_cell_btn.addEventListener('click', (e)=>{
     newcell = cells.AddCell("md");
   });
+}
+
+/// Set cursor to end of editable
+/// Author : Nico Burns
+/// Link   : https://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity/3866442#3866442
+function setEndOfContenteditable(contentEditableElement)
+{
+    var range,selection;
+    if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+    {
+        range = document.createRange();//Create a range (a range is a like the selection but invisible)
+        range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+        selection = window.getSelection();//get the selection object (allows you to change selection)
+        selection.removeAllRanges();//remove any selections already made
+        selection.addRange(range);//make the range you have just created the visible selection
+    }
+    else if(document.selection)//IE 8 and lower
+    { 
+        range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+        range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+        range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+        range.select();//Select the range (make it the visible selection
+    }
 }
